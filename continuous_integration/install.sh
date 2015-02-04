@@ -7,7 +7,7 @@
 # License: 3-clause BSD
 
 
-set -e # Exit on first error
+set -xe # Local echo and exit on first error
 
 # Install dependency for full test
 pip install coverage coveralls joblib
@@ -40,7 +40,7 @@ elif [[ "$SCHEDULER" == "SGE" ]]; then
     sudo qconf -au $USER arusers
     sudo qconf -as localhost
     export LOCALHOST_IN_SEL=$(qconf -sel | grep -c 'localhost')
-    if [ $LOCALHOST_IN_SEL != "1" ]; then sudo qconf -Ae host_template; else sudo qconf -Me host_template; fi
+    if [[ "$LOCALHOST_IN_SEL" != "1" ]]; then sudo qconf -Ae host_template; else sudo qconf -Me host_template; fi
     sed -i -r "s/UNDEFINED/$CORES/" queue_template
     sudo qconf -Ap smp_template
     sudo qconf -Aq queue_template
@@ -55,4 +55,6 @@ elif [[ "$SCHEDULER" == "SGE" ]]; then
     export SGE_CELL=default
     export DRMAA_LIBRARY_PATH=/usr/lib/libdrmaa.so.1.0
 
+    # Check that worker node is up and running
+    qhost
  fi
