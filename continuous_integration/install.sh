@@ -44,6 +44,13 @@ elif [[ "$SCHEDULER" == "SGE" ]]; then
     sed -i -r "s/UNDEFINED/$CORES/" queue_template
     sudo qconf -Ap smp_template
     sudo qconf -Aq queue_template
+
+    # Restart SGE services
+    sudo service gridengine-master restart
+    sudo service gridengine-exec restart
+    # Check that worker node is up and running
+    qhost
+
     echo "Printing queue info to verify that things are working correctly."
     qstat -f -q all.q -explain a
     echo "You should see sge_execd and sge_qmaster running below:"
@@ -55,6 +62,5 @@ elif [[ "$SCHEDULER" == "SGE" ]]; then
     export SGE_CELL=default
     export DRMAA_LIBRARY_PATH=/usr/lib/libdrmaa.so.1.0
 
-    # Check that worker node is up and running
-    qhost
+    
  fi
